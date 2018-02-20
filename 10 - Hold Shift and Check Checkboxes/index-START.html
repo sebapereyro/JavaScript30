@@ -99,6 +99,63 @@
   </div>
 
 <script>
+const SHIFT_KEYCODE = 16;
+let clickedItem = null;
+let lastClickedItem = null;
+let isShiftDown = false;
+
+var checkboxes = Array.from(document.querySelectorAll('input[type=checkbox]'));
+
+function onCheckBoxClicked(e) {
+  if (isShiftDown) {
+    lastClickedItem = clickedItem;
+  } else {
+    lastClickedItem = null;
+  }
+  clickedItem = e.target;
+  clickedItemValue = clickedItem.checked;
+
+  if (lastClickedItem == clickedItem) {
+    return;
+  }
+
+  if (isShiftDown) {
+    handleShiftDown(lastClickedItem, clickedItem, clickedItemValue);
+  }
+}
+
+function handleShiftDown(lastClickedItem, clickedItem, clickedItemValue) {
+  let inBetween = false;
+  checkboxes.forEach(checkbox => {
+    if (checkbox == lastClickedItem || checkbox == clickedItem) {
+      inBetween = !inBetween;
+    }
+    if (inBetween) {
+      checkbox.checked = clickedItemValue;
+    }
+  });
+  lastClickedItem.checked = clickedItemValue;
+}
+
+function onKeyDown(e) {
+  if (e.keyCode == SHIFT_KEYCODE) {
+    isShiftDown = true;
+    console.log('Is shift pressed?: ' + isShiftDown);
+  }
+}
+
+function onKeyUp(e) {
+  if (e.keyCode == SHIFT_KEYCODE) {
+    isShiftDown = false;
+    console.log('Is shift pressed?: ' + isShiftDown);
+  }
+}
+
+document.addEventListener('keydown', onKeyDown);
+document.addEventListener('keyup', onKeyUp);
+checkboxes.forEach(checkbox =>
+  checkbox.addEventListener('click', onCheckBoxClicked)
+);
 </script>
 </body>
 </html>
